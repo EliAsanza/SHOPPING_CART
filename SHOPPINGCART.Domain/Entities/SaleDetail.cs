@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SHOPPINGCART.Domain.Entities
+﻿namespace SHOPPINGCART.Domain.Entities
 {
     public class SaleDetail
     {
@@ -14,8 +8,5 @@ namespace SHOPPINGCART.Domain.Entities
         public int Quantity { get; set; }
         public decimal Subtotal {get; set; }
         public string TransactionId { get; set; }
-
-
-
     }
 }

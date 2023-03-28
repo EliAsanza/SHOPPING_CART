@@ -11,14 +11,12 @@ namespace SHOPPINGCART.Application
 {
     public class UserService
     {
+        //add some comment
         private UserRepository objShoppingCartInfrastructure = new UserRepository();
 
         public List<User> Lists() 
         {
-
-                    
             return objShoppingCartInfrastructure.Lists();
-        
         }
 
 

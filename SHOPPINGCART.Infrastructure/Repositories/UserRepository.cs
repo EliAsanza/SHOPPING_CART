@@ -13,7 +13,10 @@ namespace SHOPPINGCART.Infrastructure
             List<User> Listuser = new List<User>();
             try
             {
-                using (SqlConnection oconnection = new SqlConnection(Connection.cn))
+                //EntityFramework
+                //clase conext, crear dbset
+                //var listaUsuario = _context.Users;
+                using (SqlConnection oconnection = new SqlConnection(Connection.cn))//Ado.Net
                 {
                     string query = "select UserId,[Name],Lastname,Email,[Password],[Reset],Active from [USER]";
 
