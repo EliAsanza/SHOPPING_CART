@@ -132,7 +132,7 @@
                 },
                 {
                     "defaultContent": '<button type="button" class="btn btn-primary btn-sm btn-edit"><i class="fas fa-pen"></i></button> '+
-                        '<button type="button" class="btn btn-danger btn-sm m-2"><i class="fas fa-trash"></i></button>',
+                        '<button type="button" class="btn btn-danger btn-sm m-2 btn-delete"><i class="fas fa-trash"></i></button>',
                     "orderable": false,
                     "searchable": false,
                     "width": "90px"
@@ -162,14 +162,65 @@
             $("#FormModal").modal("show");
 
         }
-
+        //edit
         $("#table tbody").on("click", '.btn-edit', function ()
         {
             filaseleccionada = $(this).closest("tr");
             var data = tabledata.row(filaseleccionada).data();
-            console.log(data);
             openModal(data);
         });
+
+        //delete
+        $("#table tbody").on("click", '.btn-delete', function ()
+        {
+            var userselection = $(this).closest("tr");
+            var data = tabledata.row(userselection).data();
+            swal({
+                title: "Are you sure?",
+                text: "Do you want to delete the user?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-primary",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: true
+            },
+            function ()
+            {
+                jQuery.ajax({
+                    url: '@Url.Action("DeleteUser", "Home")',
+                    type: "POST",
+                    data: { id: data.UserId },
+                    dataType: "json",
+                    contentenType: "application/json; charset=utf-8",
+                    success: function (data)
+                    {
+                        if (data.resultt)
+                        {
+                            tabledata.row(userselection).remove().draw();
+                        }
+                        else
+                        {
+                            swal("Can't delete user", data.message, "error")
+                        }
+                    },
+                    error: function (error)
+                    {
+                        console.log(error)
+                    },
+                    beforeSend: function ()
+                    {
+
+
+                    }
+                })
+
+            });
+
+
+            console.log(data);
+        });
+
 
         function Save()
         {
@@ -190,6 +241,8 @@
                     contentenType: "application/json; charset=utf-8",
                     success: function (data)
                     {
+                        $(".modal-body").LoadingOverlay("hide");
+
                         //USER NOW
                         console.log(data);
                         console.log(User);
@@ -223,14 +276,20 @@
                                 $("#messageError").show();
                             }
                         }
-
                     },
                     error: function (error)
                     {
-                        console.log(error)
+                        $(".modal-body").LoadingOverlay("hide");
+                        $("#messageError").text("Error Ajax");
+                        $("#messageError").show();
                     },
                     beforeSend: function ()
                     {
+                        $(".modal-body").LoadingOverlay("show", {
+                            imageResizaFactor: 2,
+                            text: "Loading...",
+                            size: 14
+                        })
 
                     }
             });

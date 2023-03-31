@@ -2,6 +2,7 @@
 using SHOPPINGCART.Domain.Entities;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace SHOPPINGCART.Admin.Controllers
 {
@@ -43,5 +44,17 @@ namespace SHOPPINGCART.Admin.Controllers
             }
             return Json(new {resultt = result, message = Message }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public JsonResult DeleteUser(int id)
+        {
+            bool resp = false;
+            string message = string.Empty;
+            resp = new UserService().Delete(id, out message);
+
+            return Json(new { resultt = resp, message = message }, JsonRequestBehavior.AllowGet);
+
+        }
+
     }
 }
