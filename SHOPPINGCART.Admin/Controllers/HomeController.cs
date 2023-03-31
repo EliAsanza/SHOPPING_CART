@@ -1,9 +1,6 @@
 ﻿using SHOPPINGCART.Application;
 using SHOPPINGCART.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SHOPPINGCART.Admin.Controllers
@@ -20,14 +17,14 @@ namespace SHOPPINGCART.Admin.Controllers
             return View();
         }
 
+        [HttpGet]
         public JsonResult ListsUsers()
         {
             List<User> oList = new List<User>();
 
             oList = new UserService().Lists();
 
-            return Json(oList,JsonRequestBehavior.AllowGet);
-        
+            return Json(new { data = oList },JsonRequestBehavior.AllowGet);
         }
 
 
