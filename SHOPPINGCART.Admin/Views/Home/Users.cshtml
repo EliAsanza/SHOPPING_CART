@@ -53,24 +53,24 @@
                 <h5 class="modal-title" id="exampleModalLabel">User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body g-2">
-                <input id="txtid" type="text" value="0"/>
+            <div class="modal-body">
+                <input id="txtid" type="text" value="0" autocomplete="off" />
 
-                <div class="row">
-                    
+                <div class="row g-2">
+
                     <div class="col-sm-6">
                         <label for="textName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="textName">
+                        <input type="text" class="form-control" id="textName" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
                         <label for="textLastName" class="form-label">LastName</label>
-                        <input type="text" class="form-control" id="textLastName">
+                        <input type="text" class="form-control" id="textLastName" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
                         <label for="textEmail" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="textEmail">
+                        <input type="text" class="form-control" id="textEmail" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
@@ -80,7 +80,13 @@
                             <option value="0">No</option>
                         </select>
                     </div>
-
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div id="messageError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+                    </div>
 
                 </div>
 
@@ -142,6 +148,8 @@
             $("#textEmail").val("");
             $("#cboactive").val(1);
 
+            $("#messageError").hide();
+
             if (json != null)
             {
                 $("#txtid").val(json.UserId);
@@ -154,7 +162,7 @@
             $("#FormModal").modal("show");
 
         }
-        
+
         $("#table tbody").on("click", '.btn-edit', function ()
         {
             filaseleccionada = $(this).closest("tr");
@@ -173,23 +181,60 @@
                 Name: $("#textName").val()
             }
 
-            if (User.UserId == 0) {
-                tabledata.row.add(User).draw(false);
-                
-            }
-            else
+            jQuery.ajax(
             {
-                tabledata.row(filaseleccionada).data(User).draw(false)
-                
-            }
-            $("#FormModal").modal("hide");
+                    url: '@Url.Action("SaveUser", "Home")',
+                    type: "POST",
+                    data: User,
+                    dataType: "json",
+                    contentenType: "application/json; charset=utf-8",
+                    success: function (data)
+                    {
+                        //USER NOW
+                        console.log(data);
+                        console.log(User);
 
+                        if (User.UserId == 0)
+                        {
+                            if (data.resultt != 0)
+                            {
+                                User.UserId = data.resultt;
+                                tabledata.row.add(User).draw(false);
+                                $("#FormModal").modal("hide");
+                            }
+                            else
+                            {
+                                $("#messageError").text(data.message);
+                                $("#messageError").show();
+                            }
+                        }
+                        //USER EDIT
+                        else
+                        {
+                            if (data.resultt)
+                            {
+                                tabledata.row(filaseleccionada).data(User).draw(false)
+                                filaseleccionada = null;
+                                $("#FormModal").modal("hide");
+                            }
+                            else
+                            {
+                                $("#messageError").text(data.message);
+                                $("#messageError").show();
+                            }
+                        }
+
+                    },
+                    error: function (error)
+                    {
+                        console.log(error)
+                    },
+                    beforeSend: function ()
+                    {
+
+                    }
+            });
         }
-
-
-
-   
-
     </script>
 }
 

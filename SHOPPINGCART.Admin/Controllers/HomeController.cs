@@ -24,14 +24,24 @@ namespace SHOPPINGCART.Admin.Controllers
 
             oList = new UserService().Lists();
 
-            return Json(new { data = oList },JsonRequestBehavior.AllowGet);
+            return Json(new { data = oList }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult SaveUser(User objeto)
+        {
+            object result;
+            string Message = string.Empty;
 
-
-
-
-
-
+            if (objeto.UserId == 0)
+            {
+                result = new UserService().Register(objeto, out Message);
+            }
+            else
+            {
+                result = new UserService().Edit(objeto, out Message);
+            }
+            return Json(new {resultt = result, message = Message }, JsonRequestBehavior.AllowGet);
+        }
     }
 }
