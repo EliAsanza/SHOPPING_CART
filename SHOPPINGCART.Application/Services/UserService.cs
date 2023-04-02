@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SHOPPINGCART.Application.Resources;
-using SHOPPINGCART.Domain;
 using SHOPPINGCART.Domain.Entities;
 using SHOPPINGCART.Infrastructure;
 
@@ -38,12 +33,22 @@ namespace SHOPPINGCART.Application
 
             if (string.IsNullOrEmpty(Message))
             {
+                string password = Resource_Application.GeneratedPassword();
+                string subject = "Account Creation";
+                string message_email = "<h3>Your account was created successfully</h3></br><p>Your password to access is:!password!</p>";  //</br> salto de linea
+                message_email = message_email.Replace("!password!", password);
 
-
-                string Password = "test123";
-                obj.Password = Resource_Application.ConvertSha256(Password);
-
-                return objShoppingCartInfrastructure.Register(obj, out Message);
+                bool answer = Resource_Application.SendEmail(obj.Email, subject, message_email);
+                if (answer)
+                {
+                    obj.Password = Resource_Application.ConvertSha256(password);//actualiza la clave con la encriptada
+                    return objShoppingCartInfrastructure.Register(obj, out Message); // se registra el usuario
+                }
+                else
+                {
+                    Message = "Can't send mail";
+                    return 0;
+                }
             }
             else
             {
@@ -81,7 +86,6 @@ namespace SHOPPINGCART.Application
         public bool Delete(int id, out string Message)
         { 
             return objShoppingCartInfrastructure.Delete(id, out Message);
-        
         }
 
 

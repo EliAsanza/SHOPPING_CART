@@ -1,11 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Users";
+    ViewBag.Title = "Category";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<h2>Category</h2>
+
 <ol class="breadcrumb mb-4 mt-4">
-    <li class="breadcrumb-item big"><a href="index.html"><strong>Summary</strong></a></li>
-    <li class="breadcrumb-item active big"><strong>Users</strong></li>
+    <li class="breadcrumb-item big"><a href="index.html"><strong>Maintenance</strong></a></li>
+    <li class="breadcrumb-item active big"><strong>Categories</strong></li>
 </ol>
 
 <style>
@@ -16,13 +18,13 @@
 </style>
 <div class="card">
     <div class="card-header">
-        <i class="fas fa-users me-1"></i> <strong>List Users</strong>
+        <i class="fas fa-users me-1"></i> <strong>List Categories</strong>
     </div>
 
     <div class="card-body">
         <div class="row">
             <div class="col-12">
-                <button type="button" class="btn btn-success" onclick="openModal(null)">Create New User</button>
+                <button type="button" class="btn btn-success" onclick="openModal(null)">Create New Category</button>
             </div>
         </div>
 
@@ -31,9 +33,7 @@
         <table id="table" class="display cell-border" style="width: 100%">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>LastName</th>
-                    <th>Email</th>
+                    <th>Description</th>
                     <th>Active</th>
                     <th></th>
                 </tr>
@@ -50,27 +50,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-dark bg-dark text-white">
-                <h5 class="modal-title" id="exampleModalLabel">User</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <input id="txtid" type="text" value="0" autocomplete="off" />
 
-                <div class="row g-2">
+                <div class="row g-1">
 
                     <div class="col-sm-6">
-                        <label for="textName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="textName" autocomplete="off">
-                    </div>
-
-                    <div class="col-sm-6">
-                        <label for="textLastName" class="form-label">LastName</label>
-                        <input type="text" class="form-control" id="textLastName" autocomplete="off">
-                    </div>
-
-                    <div class="col-sm-6">
-                        <label for="textEmail" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="textEmail" autocomplete="off">
+                        <label for="textDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="textDescription" autocomplete="off">
                     </div>
 
                     <div class="col-sm-6">
@@ -101,7 +91,6 @@
     </div>
 </div>
 
-
 @section scripts{
     <script>
 
@@ -112,14 +101,12 @@
             responsive: true,
             ordering: false,
             "ajax": {
-                 url: '@Url.Action("ListsUsers","Home")',
+                 url: '@Url.Action("ListCategories", "Category")',
                  type: "GET",
                  dataType: "json"
             },
             "columns": [
-                {"data": "Name"},
-                { "data": "LastName" },
-                { "data": "Email" },
+                { "data": "Description" },
                 {
                     "data": "Active", "render": function (valor) {
                         if (valor) {
@@ -143,19 +130,15 @@
         function openModal(json)
         {
             $("#txtid").val(0);
-            $("#textName").val("");
-            $("#textLastName").val("");
-            $("#textEmail").val("");
+            $("#textDescription").val("");
             $("#cboactive").val(1);
 
             $("#messageError").hide();
 
             if (json != null)
             {
-                $("#txtid").val(json.UserId);
-                $("#textName").val(json.Name);
-                $("#textLastName").val(json.LastName);
-                $("#textEmail").val(json.Email);
+                $("#txtid").val(json.CategoryId);
+                $("#textDescription").val(json.Description);
                 $("#cboactive").val(json.Active == true? 1 : 0);
             }
 
@@ -173,11 +156,11 @@
         //delete
         $("#table tbody").on("click", '.btn-delete', function ()
         {
-            var userselection = $(this).closest("tr");
-            var data = tabledata.row(userselection).data();
+            var categoryselection = $(this).closest("tr");
+            var data = tabledata.row(categoryselection).data();
             swal({
                 title: "Are you sure?",
-                text: "Do you want to delete the user?",
+                text: "Do you want to delete the category?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-primary",
@@ -188,20 +171,20 @@
             function ()
             {
                 jQuery.ajax({
-                    url: '@Url.Action("DeleteUser", "Home")',
+                    url: '@Url.Action("DeleteCategory", "Category")',
                     type: "POST",
-                    data: { id: data.UserId },
+                    data: { categoryId: data.CategoryId },
                     dataType: "json",
                     contentenType: "application/json; charset=utf-8",
                     success: function (data)
                     {
-                        if (data.resultt)
+                        if (data.result)
                         {
-                            tabledata.row(userselection).remove().draw();
+                            tabledata.row(categoryselection).remove().draw();
                         }
                         else
                         {
-                            swal("Can't delete user", data.message, "error")
+                            swal("Can't delete category", data.message, "error")
                         }
                     },
                     error: function (error)
@@ -211,45 +194,43 @@
                     beforeSend: function ()
                     {
 
-
                     }
                 })
 
             });
-
-
             console.log(data);
         });
 
 
         function Save()
         {
-            var User = {
-                UserId: $("#txtid").val(),
-                Active: $("#cboactive").val() == 1 ? true: false,
-                Email: $("#textEmail").val(),
-                LastName: $("#textLastName").val(),
-                Name: $("#textName").val()
-            }
+            var Category =
+            {
+                CategoryId: $("#txtid").val(),
+                Description: $("#textDescription").val(),
+                Active: $("#cboactive").val() == 1 ? true : false,
 
+            }
+            
             jQuery.ajax(
             {
-                    url: '@Url.Action("SaveUser", "Home")',
+                    url: '@Url.Action("SaveCategory", "Category")',
                     type: "POST",
-                    data: User,
+                    data: Category,
                     dataType: "json",
                     contentenType: "application/json; charset=utf-8",
                     success: function (data)
                     {
                         $(".modal-body").LoadingOverlay("hide");
-
-                        //USER NOW
-                        if (User.UserId == 0)
+                        
+                        
+                        //CATEGORY NOW
+                        if (Category.CategoryId == 0)
                         {
-                            if (data.resultt != 0)
+                            if (data.result != 0)
                             {
-                                User.UserId = data.resultt;
-                                tabledata.row.add(User).draw(false);
+                                Category.CategoryId = data.resultt;
+                                tabledata.row.add(Category).draw(false);
                                 $("#FormModal").modal("hide");
                             }
                             else
@@ -258,12 +239,13 @@
                                 $("#messageError").show();
                             }
                         }
-                        //USER EDIT
+
+                        //CATEGORY EDIT
                         else
                         {
-                            if (data.resultt)
+                            if (data.result)
                             {
-                                tabledata.row(filaseleccionada).data(User).draw(false)
+                                tabledata.row(filaseleccionada).data(Category).draw(false)
                                 filaseleccionada = null;
                                 $("#FormModal").modal("hide");
                             }
@@ -293,4 +275,5 @@
         }
     </script>
 }
+
 

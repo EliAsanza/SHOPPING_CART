@@ -121,7 +121,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MaintainerController.cs" />
+    <Compile Include="Controllers\BrandController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -482,9 +484,9 @@
     <Content Include="webfonts\fa-brands-400.ttf" />
     <Content Include="webfonts\fa-brands-400.eot" />
     <Content Include="Views\Home\Users.cshtml" />
-    <Content Include="Views\Maintainer\Category.cshtml" />
-    <Content Include="Views\Maintainer\Brand.cshtml" />
-    <Content Include="Views\Maintainer\Product.cshtml" />
+    <Content Include="Views\Brand\Brand.cshtml" />
+    <Content Include="Views\Product\Product.cshtml" />
+    <Content Include="Views\Category\Category.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource_Application.cs" />
+    <Compile Include="Services\BrandService.cs" />
+    <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
