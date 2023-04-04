@@ -18,7 +18,7 @@
 </style>
 <div class="card">
     <div class="card-header">
-        <i class="fas fa-users me-1"></i> <strong>List Products</strong>
+        <i class="fas fa-boxes me-1"></i> <strong>List Products</strong>
     </div>
 
     <div class="card-body">
@@ -35,10 +35,10 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Description</th>
-                    <th>Description</th>
-                    <th>Description</th>
-                    <th>Description</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
                     <th>Active</th>
                     <th></th>
                 </tr>
@@ -52,36 +52,71 @@
 
 <!-- Modal -->
 <div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-dark bg-dark text-white">
-                <h5 class="modal-title" id="exampleModalLabel">Brand</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Product</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <input id="txtid" type="text" value="0" autocomplete="off" />
 
-                <div class="row g-1">
-
-                    <div class="col-sm-6">
-                        <label for="textDescription" class="form-label">Description</label>
-                        <input type="text" class="form-control" id="textDescription" autocomplete="off">
+                <form id="contenedor" class="row">
+                    <div class="col-sm-3">
+                        <div class="mb-2">
+                            <img id="img_product" height="197" width="200" class="border rounded mx-auto d-block img-fluid" />
+                        </div>
+                        <div class="mb-2">
+                            <input class="form-control" type="file" id="fileProduct" accept="image/png, image/jpg, image/jpeg" onchange="showImage(this)" />
+                        </div>
                     </div>
 
-                    <div class="col-sm-6">
-                        <label for="cboactive" class="form-label">Active</label>
-                        <select id="cboactive" class="form-select">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="txtName" name="Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea type="text" class="form-control" id="txtDescription" name="Description" style="height:125px;resize:none"></textarea>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Brand</label>
+                            <select id="cboBrand" class="form-select"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select id="cboCategory" class="form-select"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="text" class="form-control" id="txtPrice" name="Price" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="txtStock" name="Stock" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Active</label>
+                            <select id="cboActive" class="form-select">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
 
                 <!--Message Alert-->
                 <div class="row mt-2">
                     <div class="col-12">
                         <div id="messageError" class="alert alert-danger" role="alert">
-                            A simple danger alert—check it out!
                         </div>
                     </div>
 
@@ -102,16 +137,42 @@
         var tabledata;
         var filaseleccionada;
 
+        function showImage(input)
+        {
+            if (input.files) //Si tienes archivos continuamos con la lógica
+            {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $("#img_product").attr("src", e.target.result).width(200).height(197)
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         tabledata = $("#table").DataTable({
             responsive: true,
             ordering: false,
             "ajax": {
-                 url: '@Url.Action("ListBrands", "Brand")',
-                 type: "GET",
-                 dataType: "json"
+                url: '@Url.Action("ListProducts", "Product")',
+                type: "GET",
+                dataType: "json"
             },
             "columns": [
+                { "data": "Name" },
                 { "data": "Description" },
+                {
+                    "data": "oBrandId", "render": function (data) {
+                        return data.Description
+                    }
+                },
+                {
+                    "data": "oCategoryId", "render": function (data) {
+                        return data.Description
+                    }
+                },
+                { "data": "Price" },
+                { "data": "Stock" },
                 {
                     "data": "Active", "render": function (valor) {
                         if (valor) {
@@ -132,24 +193,114 @@
             ]
         });
 
+        jQuery.ajax({
+            url: '@Url.Action("ListBrands", "Brand")',
+            type: "GET",
+            data: null,
+            dataType: "json",
+            contentenType: "application/json; charset=utf-8",
+            success: function (data) {
+
+                $("<option>").attr({ "value": "0", "dissabled": "true" }).text("Select").appendTo("#cboBrand");
+
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr({ "value": valor.BrandId }).text(valor.Description).appendTo("#cboBrand");
+                })
+            },
+            error: function () {
+                console.log(error)
+            }
+        });
+
+        jQuery.ajax({
+            url: '@Url.Action("ListCategories", "Category")',
+            type: "GET",
+            data: null,
+            dataType: "json",
+            contentenType: "application/json; charset=utf-8",
+            success: function (data) {
+
+                $("<option>").attr({ "value": "0", "dissabled": "true" }).text("Select").appendTo("#cboCategory");
+
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr({ "value": valor.CategoryId }).text(valor.Description).appendTo("#cboCategory");
+                })
+            },
+            error: function () {
+                console.log(error)
+            }
+        });
+
+
+        jQuery.validator.addMethod("priceDecimal", function (value, element) {
+            return this.optional(element) || /^\d{0,4}(\.\d{0,2})?$/i.test(value);
+        }, "The correct format of the price ##.##");
+
+        $("#contenedor").validate({
+            rules: {
+                Name: {    //campo nombre es requerido
+                    required: true
+                },
+                Description: {    //campo desc es requerido
+                    required: true
+                },
+                Price: {    //campo price es requerido
+                    required: true
+                },
+                Price: {    //campo price es requerido
+                    required: true,
+                    priceDecimal: true
+                },
+                Stock: {    //campo stock es requerido
+                    required: true,
+                    number: true
+                },
+            },
+            messages: {
+                Name: "- The name is required",
+                Description: "- The description is required",
+                Price: { required: "- The price is required", priceDecimal: "The correct format of the price ##.##" },
+                Stock: { required: "- The stock is required", priceDecimal: "- You must enter only numbers in the stock "}
+            },
+            errorElement: "div",
+            errorLabelContainer: "alet-danger"
+        })
+
+
+
+
+
         function openModal(json)
         {
+            console.log(json);
             $("#txtid").val(0);
-            $("#textDescription").val("");
-            $("#cboactive").val(1);
+            $("#img_product").removeAttr("src");
+            $("#fileProduct").val("");
+            $("#txtName").val("");
+            $("#txtDescription").val("");
+            $("#cboBrand").val($("#cboBrand option:first").val());
+            $("#cboCategory").val($("#cboCategory option:first").val());
+            $("#txtPrice").val("");
+            $("#txtStock").val("");
+            $("#cboActive").val(1);
 
             $("#messageError").hide();
 
             if (json != null)
             {
-                $("#txtid").val(json.BrandId);
-                $("#textDescription").val(json.Description);
-                $("#cboactive").val(json.Active == true? 1 : 0);
+                $("#txtid").val(json.ProductId);
+                $("#txtName").val(json.Name);
+                $("#txtDescription").val(json.Description);
+                $("#cboBrand").val(json.oBrandId.BrandId);
+                $("#cboCategory").val(json.oCategoryId.CategoryId);
+                $("#txtPrice").val(json.Price);
+                $("#txtStock").val(json.Stock);
+                $("#cboActive").val(json.Active == true? 1 : 0);
             }
 
             $("#FormModal").modal("show");
-
         }
+
         //edit
         $("#table tbody").on("click", '.btn-edit', function ()
         {
@@ -161,11 +312,11 @@
         //delete
         $("#table tbody").on("click", '.btn-delete', function ()
         {
-            var brandselection = $(this).closest("tr");
-            var data = tabledata.row(brandselection).data();
+            var productselection = $(this).closest("tr");
+            var data = tabledata.row(productselection).data();
             swal({
                 title: "Are you sure?",
-                text: "Do you want to delete the brand?",
+                text: "Do you want to delete the Product?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-primary",
@@ -176,20 +327,20 @@
             function ()
             {
                 jQuery.ajax({
-                    url: '@Url.Action("DeleteBrand", "Brand")',
+                    url: '@Url.Action("DeleteProduct", "Product")',
                     type: "POST",
-                    data: { brandId: data.BrandId },
+                    data: { productId: data.ProductId },
                     dataType: "json",
                     contentenType: "application/json; charset=utf-8",
                     success: function (data)
                     {
                         if (data.result)
                         {
-                            tabledata.row(brandselection).remove().draw();
+                            tabledata.row(productselection).remove().draw();
                         }
                         else
                         {
-                            swal("Can't delete brand", data.message, "error")
+                            swal("Can't delete product", data.message, "error")
                         }
                     },
                     error: function (error)
@@ -208,32 +359,56 @@
 
         function Save()
         {
-            var Brand =
+            if (!$("#contenedor").valid())  // si algun campo esta vacío no continua con el codigo
             {
-                BrandId: $("#txtid").val(),
-                Description: $("#textDescription").val(),
-                Active: $("#cboactive").val() == 1 ? true : false,
+                return;
             }
 
+            var SelectImage = $("#fileProduct")[0].files[0];
+
+            var Product =
+            {
+                ProductId: $("#txtid").val(),
+                Name: $("#txtName").val(),
+                Description: $("#txtDescription").val(),
+                oBrandId: {
+                    BrandId: $("#cboBrand option:selected").val(),
+                    Description: $("#cboBrand option:selected").text()
+                },
+                oCategoryId: {
+                    CategoryId: $("#cboCategory option:selected").val(),
+                    Description: $("#cboCategory option:selected").text()
+                },
+                PriceText: $("#txtPrice").val(),
+                Price: $("#txtPrice").val(),
+                Stock: $("#txtStock").val(),
+                Active: $("#cboActive").val() == 1 ? true : false
+            };
+
+            console.log("Product", Product);
+            var request = new FormData();
+            request.append("objecto", JSON.stringify(Product));
+            request.append("archivoImage", SelectImage);
             jQuery.ajax(
             {
-                    url: '@Url.Action("SaveBrand", "Brand")',
+                    url: '@Url.Action("SaveProduct", "Product")',
                     type: "POST",
-                    data: Brand,
-                    dataType: "json",
-                    contentenType: "application/json; charset=utf-8",
+                    data: request,
+                    processData: false,
+                    contentType: false,
                     success: function (data)
                     {
                         $(".modal-body").LoadingOverlay("hide");
 
 
-                        //BRAND NOW
-                        if (Brand.BrandId == 0)
+                        //PRODUCT NOW
+                        if (Product.ProductId == 0)
                         {
-                            if (data.result != 0)
+                            console.log(data);
+                            if (data.successfulOperation)
                             {
-                                Brand.BrandId = data.resultt;
-                                tabledata.row.add(Brand).draw(false);
+                                Product.ProductId = data.autogeneratedId;
+                                tabledata.row.add(Product).draw(false);
                                 $("#FormModal").modal("hide");
                             }
                             else
@@ -243,12 +418,12 @@
                             }
                         }
 
-                        //BRAND EDIT
+                        //PRODUCT EDIT
                         else
                         {
-                            if (data.result)
+                            if (data.successfulOperation)
                             {
-                                tabledata.row(filaseleccionada).data(Brand).draw(false)
+                                tabledata.row(filaseleccionada).data(Product).draw(false)
                                 filaseleccionada = null;
                                 $("#FormModal").modal("hide");
                             }
@@ -272,7 +447,6 @@
                             text: "Loading...",
                             size: 14
                         })
-
                     }
             });
         }

@@ -135,11 +135,13 @@ namespace SHOPPINGCART.Infrastructure.Repositories
             {
                 using (SqlConnection oconnection = new SqlConnection(Connection.cn))
                 {
-                    SqlCommand cmd = new SqlCommand("sp_RegistrationProduct", oconnection);
-
                     string query = "Update product set ImagePath = @ImagePath, ImageName = @ImageName where ProductId = @ProductId";
+                    SqlCommand cmd = new SqlCommand(query, oconnection);
+
                     cmd.Parameters.AddWithValue("@ImagePath", oProduct.ImagePath);
                     cmd.Parameters.AddWithValue("@ImageName", oProduct.ImageName);
+                    cmd.Parameters.AddWithValue("@ProductId", oProduct.ProductId);
+
                     cmd.CommandType = CommandType.Text;
                     oconnection.Open();
                     if (cmd.ExecuteNonQuery() > 0)

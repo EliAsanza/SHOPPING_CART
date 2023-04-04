@@ -59,5 +59,21 @@ namespace SHOPPINGCART.Application.Resources
             }
             return result;
         }
+
+        public static string ConvertBase64(string ruta, out bool convertion)
+        {
+            string txtBase64= string.Empty;
+            convertion = true;
+            try
+            {
+                byte[] bytes = File.ReadAllBytes(ruta);
+                txtBase64 = Convert.ToBase64String(bytes);
+            }
+            catch (Exception ex)
+            {
+                convertion = false;
+            }
+            return txtBase64;
+        }
     }
 }
