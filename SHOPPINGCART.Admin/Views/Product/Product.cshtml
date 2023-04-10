@@ -59,7 +59,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input id="txtid" type="text" value="0" autocomplete="off" />
+                <input id="txtid" type="hidden" value="0" autocomplete="off" />
 
                 <form id="contenedor" class="row">
                     <div class="col-sm-3">
@@ -266,13 +266,9 @@
             errorLabelContainer: "alet-danger"
         })
 
-
-
-
-
         function openModal(json)
         {
-            console.log(json);
+            console.log("json",json);
             $("#txtid").val(0);
             $("#img_product").removeAttr("src");
             $("#fileProduct").val("");
@@ -295,7 +291,34 @@
                 $("#cboCategory").val(json.oCategoryId.CategoryId);
                 $("#txtPrice").val(json.Price);
                 $("#txtStock").val(json.Stock);
-                $("#cboActive").val(json.Active == true? 1 : 0);
+                $("#cboActive").val(json.Active == true ? 1 : 0);
+
+                jQuery.ajax({
+                url: '@Url.Action("ProductImage", "Product")', //para que pinte la imagen
+                type: "POST",
+                data: JSON.stringify({ id: json?.ProductId }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#img_product").LoadingOverlay("hide");
+
+                    if (data.convertion) {
+                        $("#img_product").attr({
+                            "src": "data:image/" + data.extension + ";base64," + data.txtBase64
+                        });
+                    }
+                },
+                error: function (error) {
+                    $("#img_product").LoadingOverlay("hide");
+
+                    $("#messageError").show();
+                    $("#messageError").text("Error displaying image");
+                },
+                beforeSend: function () {
+                    $("#img_product").LoadingOverlay("show");
+                },
+            });
+
             }
 
             $("#FormModal").modal("show");
@@ -346,10 +369,6 @@
                     error: function (error)
                     {
                         console.log(error)
-                    },
-                    beforeSend: function ()
-                    {
-
                     }
                 })
             });

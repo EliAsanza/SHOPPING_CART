@@ -1,33 +1,186 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+<h1 class="mt-4">Dashboard</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Dashboard</li>
+</ol>
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h4>Number of Clients</h4>
+                        <h6 id="totalCustomer">0</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</main>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h4>Sales Amount</h4>
+                        <h6 id="totalSales">0</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-shopping-bag fa-2x"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h4>Quantity Products</h4>
+                        <h6 id="totalProducts">0</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-boxes fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-tags me-1"></i>
+        Sales History
+    </div>
+    <div class="card-body">
+        <form action="@Url.Action("SaleExport", "DashBoardReport")" method="post">
+            <div class="row align-items-end">
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label"><strong>Start Date:</strong></label>
+                        <input class="form-control" type="text" id="txtStartDate" name="StartDate" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label"><strong>Ending Date:</strong></label>
+                        <input class="form-control" type="text" id="txtEndingDate" name="EndingDate" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label"><strong>TransactionId:</strong></label>
+                        <input class="form-control" type="text" id="txtTransactionId" name="TransactionId" />
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <div class="d-grid mb-2">
+                        <button class="btn btn-info" id="btnsearch" type="button"><i class="fas fa-search"></i>Search</button>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <div class=" d-grid mb-2">
+                        <button class="btn btn-success" id="btnExport" type="submit"><i class="fas fa-file-excel"></i>Export</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="table" class="display  cell-border" style="width:100%"> 
+                    <thead>
+                        <tr>
+                            <th>Sale Date</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>ID Transaction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+
+        var tabledata;
+
+         $(document).ready(function(){
+
+              $("#txtStartDate").datepicker({dateFormat:'dd/mm/yy'}).datepicker('setDate', new Date())
+              $("#txtEndingDate").datepicker({ dateFormat: 'dd/mm/yy' }).datepicker('setDate', new Date())
+
+              jQuery.ajax({
+                 url: '@Url.Action("ViewDashBoard", "DashBoardReport")',
+                 type: "GET",
+                 dataType: "json",
+                 contentType: "application/json; charset=utf-8",
+                 success: function(data) {
+                     var objeto = data.result;
+                     $("#totalCustomer").text(objeto.TotalCustomer)
+                     $("#totalSales").text(objeto.TotalSales)
+                     $("#totalProducts").text(objeto.TotalProduct)
+                 }
+              });
+
+                var Url = '@Url.Action("ListReports","DashBoardReport")' +
+                 "?startDate=" + $("#txtStartDat").val() +
+                 "endingDate=" + $("#txtEndingDat").val() +
+                 "transactionId=" + $("#txtTransactionId").val()
+
+
+             tabledata = $("#table").DataTable({
+                 responsive: true,
+                 ordering: false,
+                 "ajax": {
+                     url: '@Url.Action("ListReports","DashBoardReport")',
+                     type: "GET",
+                     dataType: "json"
+                 },
+                 "columns": [
+                     { "data": "SaleDate" },
+                     { "data": "Customer" },
+                     { "data": "Price" },
+                     { "data": "Quantity" },
+                     { "data": "SubTotal" },
+                     { "data": "TotalAmount" },
+                     { "data": "TransactionId" }
+                 ],
+             });
+         })
+
+
+        $("#btnsearch").on("click", function () {
+             var NewUrl = '@Url.Action("ListReports","DashBoardReport")' +
+             "?startDate=" + $("#txtStartDat").val() +
+             "endingDate=" + $("#txtEndingDat").val() +
+                 "transactionId=" + $("#txtTransactionId").val()
+
+            tabledata.ajax.url(NewUrl).load();
+
+
+        })
+
+    </script>
+}

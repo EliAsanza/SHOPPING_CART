@@ -105,7 +105,7 @@ namespace SHOPPINGCART.Admin.Controllers
             bool convertion;
             Product oProduct = new ProductService().Lists().Where(p => p.ProductId == id).FirstOrDefault();
             string txtBase64 = Resource_Application.ConvertBase64(Path.Combine(oProduct.ImagePath, oProduct.ImageName), out convertion);
-
+                                                    
             return Json(new
             {
                 convertion = convertion,

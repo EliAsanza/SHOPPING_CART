@@ -10,7 +10,7 @@ namespace SHOPPINGCART.Admin.Controllers
         // GET: Maintainer
         public ActionResult Brand()
         {
-            return View();
+            return View();//index
         }
 
         [HttpGet]

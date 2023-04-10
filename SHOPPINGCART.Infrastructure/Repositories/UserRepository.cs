@@ -134,5 +134,53 @@ namespace SHOPPINGCART.Infrastructure
             }
             return result;
         }
+
+        public bool ChangePassword(int userId, string newPassword, out string Message)
+        {
+            bool result = false;
+            Message = string.Empty;
+            try
+            {
+                using (SqlConnection oconnection = new SqlConnection(Connection.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("update user set password = @newPassword, restore = 0 where userId = @id", oconnection);
+                    cmd.Parameters.AddWithValue("@id", userId);
+                    cmd.Parameters.AddWithValue("@newPassword", newPassword);
+                    cmd.CommandType = CommandType.Text;
+                    oconnection.Open();
+                    result = cmd.ExecuteNonQuery() > 0 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Message = ex.Message;
+            }
+            return result;
+        }
+
+        public bool ResetPassword(int userId, string newPassword, out string Message)
+        {
+            bool result = false;
+            Message = string.Empty;
+            try
+            {
+                using (SqlConnection oconnection = new SqlConnection(Connection.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("update user set password = @password, restore = 1 where userId = @id", oconnection);
+                    cmd.Parameters.AddWithValue("@id", userId);
+                    cmd.Parameters.AddWithValue("@password", newPassword);
+                    cmd.CommandType = CommandType.Text;
+                    oconnection.Open();
+                    result = cmd.ExecuteNonQuery() > 0 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                Message = ex.Message;
+            }
+            return result;
+        }
     }
 }

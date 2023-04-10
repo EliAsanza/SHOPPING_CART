@@ -88,6 +88,40 @@ namespace SHOPPINGCART.Application
             return objShoppingCartInfrastructure.Delete(id, out Message);
         }
 
+        public bool ChangePassword(int userId, string newPassword, out string Message)
+        {
+            return objShoppingCartInfrastructure.ChangePassword(userId, newPassword,out Message);
+        }
 
+        public bool ResetPassword(int userId, string email, out string Message)
+        {
+            Message = string.Empty;
+            string newpassword = Resource_Application.GeneratedPassword();
+            bool result = objShoppingCartInfrastructure.ResetPassword(userId, Resource_Application.ConvertSha256(newpassword),out Message);
+
+            if(result) 
+            {
+                string subject = "Reset Password";
+                string message_email = "<h3>Your account was reset successfully</h3></br><p>Your password to access now is:!password!</p>";  //</br> salto de linea
+                message_email = message_email.Replace("!password!", newpassword);
+
+                bool answer = Resource_Application.SendEmail(email, subject, message_email);
+
+                if (answer)
+                {
+                    return true;
+                }
+                else
+                {
+                    Message = "I can't send the mail";
+                    return false;
+                }
+            }
+            else 
+            {
+                Message = "Could not reset password";
+                return false;
+            }
+        }
     }
 }
